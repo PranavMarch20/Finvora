@@ -1,0 +1,27 @@
+{
+  "name": "finovara-platform",
+  "version": "1.0.0",
+  "description": "FINOVARA – Finance & Business Advisory Official Web Application (MERN Stack)",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "dev": "concurrently -n \"API,CLIENT\" -c \"cyan,green\" \"npm run server\" \"npm run client\"",
+    "build": "npm --prefix client run build"
+  },
+  "keywords": [
+    "finovara",
+    "accounting",
+    "tax",
+    "gst",
+    "compliance",
+    "advisory",
+    "mern"
+  ],
+  "author": "FINOVARA",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
