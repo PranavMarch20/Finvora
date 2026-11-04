@@ -1,7 +1,10 @@
 import React from 'react';
-import { X, ShieldCheck, FileText, AlertTriangle, Scale } from 'lucide-react';
+import { X, ShieldCheck, AlertTriangle, Scale } from 'lucide-react';
+import useDialog from '../useDialog';
 
 export default function LegalModal({ isOpen, mode = 'privacy', onClose }) {
+  const dialogRef = useDialog(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const contentMap = {
@@ -109,10 +112,6 @@ export default function LegalModal({ isOpen, mode = 'privacy', onClose }) {
             While FINOVARA prepares financial packs and CMA projections with rigorous diligence, the sanction of bank loans, credit limits, vendor tenders, or regulatory approvals remains at the sole discretion of the respective lending institutions, tendering authorities, or government bodies.
           </p>
 
-          <h4>4. Pre-Launch Website Status</h4>
-          <p>
-            This website represents the operational specification of FINOVARA. Official corporate contact numbers and finalized email credentials will be verified and published immediately prior to public commercial launch.
-          </p>
         </div>
       )
     }
@@ -124,8 +123,13 @@ export default function LegalModal({ isOpen, mode = 'privacy', onClose }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div 
+        ref={dialogRef}
         className="modal-container legal-modal-container animate-fade-in" 
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="legal-dialog-title"
+        tabIndex={-1}
       >
         <div className="modal-header">
           <div className="modal-title-row">
@@ -133,7 +137,7 @@ export default function LegalModal({ isOpen, mode = 'privacy', onClose }) {
               <Icon size={22} />
             </div>
             <div>
-              <h3 className="modal-title">{current.title}</h3>
+              <h3 id="legal-dialog-title" className="modal-title">{current.title}</h3>
               <p className="modal-subtitle">{current.subtitle}</p>
             </div>
           </div>
@@ -142,6 +146,7 @@ export default function LegalModal({ isOpen, mode = 'privacy', onClose }) {
             onClick={onClose} 
             className="btn-close-modal"
             aria-label="Close dialog"
+            data-dialog-autofocus
           >
             <X size={20} />
           </button>

@@ -2,22 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { 
   Send, 
   MapPin, 
-  Mail, 
-  Phone, 
-  Clock, 
+  Mail,
+  Phone,
+  Clock,
   CheckCircle, 
   AlertCircle, 
-  ShieldCheck, 
-  Sparkles,
-  HelpCircle,
-  Inbox,
-  ArrowRight
+  ShieldCheck
 } from 'lucide-react';
+
+const contactDetails = {
+  email: import.meta.env.VITE_FINOVARA_EMAIL || '',
+  phone: import.meta.env.VITE_FINOVARA_PHONE || '',
+  hours: import.meta.env.VITE_FINOVARA_HOURS || ''
+};
 
 export default function EnquirySection({ 
   initialValues = {}, 
-  onSuccessEnquiry,
-  onOpenAdmin 
+  onSuccessEnquiry
 }) {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -74,6 +75,29 @@ export default function EnquirySection({
     'Profitability, KPI & Trend Dashboards',
     'Coordinated Service Desk Advisory (Full Scope)'
   ];
+
+  const contactPoints = [
+    {
+      label: 'SERVICE AREA',
+      value: 'Noida · Delhi NCR · Remote support across India',
+      icon: MapPin
+    },
+    contactDetails.email && {
+      label: 'BUSINESS EMAIL',
+      value: contactDetails.email,
+      icon: Mail
+    },
+    contactDetails.phone && {
+      label: 'PHONE / WHATSAPP',
+      value: contactDetails.phone,
+      icon: Phone
+    },
+    contactDetails.hours && {
+      label: 'BUSINESS HOURS',
+      value: contactDetails.hours,
+      icon: Clock
+    }
+  ].filter(Boolean);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -164,7 +188,7 @@ export default function EnquirySection({
 
         <div className="grid-2 enquiry-main-grid">
           
-          {/* Left Column: Client Contact Information & Launch Status */}
+          {/* Left Column: Client Contact Information */}
           <div className="contact-info-panel">
             
             <div className="panel-header-box">
@@ -179,93 +203,22 @@ export default function EnquirySection({
             </div>
 
             <div className="contact-points-list">
-              
-              {/* Service Area */}
-              <div className="contact-point-item">
-                <div className="point-icon-box">
-                  <MapPin size={20} />
-                </div>
-                <div className="point-text-block">
-                  <span className="point-label">SERVICE AREA</span>
-                  <span className="point-value">Noida · Delhi NCR · Remote support across India</span>
-                </div>
-              </div>
+              {contactPoints.map((point) => {
+                const Icon = point.icon;
 
-              {/* Business Email */}
-              <div className="contact-point-item">
-                <div className="point-icon-box">
-                  <Mail size={20} />
-                </div>
-                <div className="point-text-block">
-                  <span className="point-label">BUSINESS EMAIL</span>
-                  <div className="point-value-row">
-                    <span className="point-value">advisory@finovara.in</span>
-                    <span className="pending-badge">[Add official email before launch]</span>
+                return (
+                  <div key={point.label} className="contact-point-item">
+                    <div className="point-icon-box">
+                      <Icon size={20} />
+                    </div>
+                    <div className="point-text-block">
+                      <span className="point-label">{point.label}</span>
+                      <span className="point-value">{point.value}</span>
+                    </div>
                   </div>
-                </div>
-              </div>
+                );
+              })}
 
-              {/* Phone / WhatsApp */}
-              <div className="contact-point-item">
-                <div className="point-icon-box">
-                  <Phone size={20} />
-                </div>
-                <div className="point-text-block">
-                  <span className="point-label">PHONE / WHATSAPP</span>
-                  <div className="point-value-row">
-                    <span className="point-value">+91 (To be confirmed)</span>
-                    <span className="pending-badge">[Add contact number before launch]</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Hours */}
-              <div className="contact-point-item">
-                <div className="point-icon-box">
-                  <Clock size={20} />
-                </div>
-                <div className="point-text-block">
-                  <span className="point-label">BUSINESS HOURS</span>
-                  <div className="point-value-row">
-                    <span className="point-value">Mon – Sat: 9:30 AM – 6:30 PM IST</span>
-                    <span className="pending-badge">[Add confirmed hours before launch]</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Launch Checklist Box (From Page 5) */}
-            <div className="launch-requirements-card">
-              <div className="launch-card-title">
-                <ShieldCheck size={16} />
-                <span>Launch &amp; Integration Checklist</span>
-              </div>
-              <ul className="launch-checklist">
-                <li>
-                  <span className="check-bullet">✓</span>
-                  <span>Enquiry API connected to Node.js / MongoDB backend</span>
-                </li>
-                <li>
-                  <span className="check-bullet">⏳</span>
-                  <span>Client to confirm official email, phone &amp; registered address</span>
-                </li>
-                <li>
-                  <span className="check-bullet">✓</span>
-                  <span>Privacy Policy, Terms of Service &amp; Disclaimer fully integrated</span>
-                </li>
-              </ul>
-              <div className="preview-note-text">
-                <strong>Preview note:</strong> Connect the form to an email, CRM or form service before public launch.
-              </div>
-              <button 
-                type="button" 
-                onClick={onOpenAdmin}
-                className="btn btn-outline-white btn-sm mt-3"
-              >
-                <Inbox size={14} />
-                <span>Inspect Database Enquiries ({successData ? '1+' : 'View'})</span>
-              </button>
             </div>
 
           </div>
@@ -275,18 +228,17 @@ export default function EnquirySection({
             
             <div className="form-card-header">
               <h3 className="form-title">Consultation Enquiry Form</h3>
-              <p className="form-subtext">Fields correspond to official FINOVARA intake specification.</p>
             </div>
 
             {errorMsg && (
-              <div className="form-alert form-alert-error animate-fade-in">
+              <div className="form-alert form-alert-error animate-fade-in" role="alert">
                 <AlertCircle size={18} />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             {successData && (
-              <div className="form-alert form-alert-success animate-fade-in">
+              <div className="form-alert form-alert-success animate-fade-in" role="status">
                 <CheckCircle size={20} className="success-icon" />
                 <div className="success-content">
                   <div className="success-title">Enquiry Registered Successfully!</div>
@@ -408,6 +360,7 @@ export default function EnquirySection({
                     type="button" 
                     className="btn-clear-tag" 
                     onClick={() => setFormData(p => ({ ...p, selectedPackage: '' }))}
+                    aria-label="Remove selected advisory plan"
                   >
                     ×
                   </button>

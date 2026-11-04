@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, CheckCircle, AlertCircle, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, ShieldCheck } from 'lucide-react';
+import useDialog from '../useDialog';
 
 export default function EnquiryModal({ 
   isOpen, 
@@ -31,6 +32,14 @@ export default function EnquiryModal({
       }));
     }
   }, [initialValues]);
+
+  const handleClose = () => {
+    setSubmittedData(null);
+    setErrorMsg('');
+    onClose();
+  };
+
+  const dialogRef = useDialog(isOpen, handleClose);
 
   if (!isOpen) return null;
 
@@ -124,23 +133,22 @@ export default function EnquiryModal({
     }
   };
 
-  const handleClose = () => {
-    setSubmittedData(null);
-    setErrorMsg('');
-    onClose();
-  };
-
   return (
     <div className="modal-backdrop" onClick={handleClose}>
       <div 
+        ref={dialogRef}
         className="modal-container consultation-modal-container animate-fade-in"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="consultation-dialog-title"
+        tabIndex={-1}
       >
         <div className="modal-header">
           <div className="modal-title-row">
             <div className="consult-badge-icon">■</div>
             <div>
-              <h3 className="modal-title">Book an Advisory Consultation</h3>
+              <h3 id="consultation-dialog-title" className="modal-title">Book an Advisory Consultation</h3>
               <p className="modal-subtitle">One Coordinated Service Desk • Direct Intake</p>
             </div>
           </div>
@@ -149,6 +157,7 @@ export default function EnquiryModal({
             onClick={handleClose} 
             className="btn-close-modal"
             aria-label="Close modal"
+            data-dialog-autofocus
           >
             <X size={20} />
           </button>
@@ -156,7 +165,7 @@ export default function EnquiryModal({
 
         <div className="modal-body">
           {errorMsg && (
-            <div className="form-alert form-alert-error animate-fade-in mb-3">
+            <div className="form-alert form-alert-error animate-fade-in mb-3" role="alert">
               <AlertCircle size={18} />
               <span>{errorMsg}</span>
             </div>

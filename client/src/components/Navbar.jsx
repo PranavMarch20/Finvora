@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Building2, 
   Menu, 
   X, 
-  PhoneCall, 
   Inbox, 
-  ShieldCheck, 
-  FileText,
+  ChevronDown,
   ChevronRight
 } from 'lucide-react';
 
 export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopOthersOpen, setDesktopOthersOpen] = useState(false);
+  const [mobileOthersOpen, setMobileOthersOpen] = useState(false);
+  const desktopOthersRef = useRef(null);
+  const desktopOthersTriggerRef = useRef(null);
+  const firstDesktopOtherLinkRef = useRef(null);
+  const mobileToggleRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,17 +25,75 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (!desktopOthersRef.current?.contains(event.target)) {
+        setDesktopOthersOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+
+      if (desktopOthersOpen) {
+        setDesktopOthersOpen(false);
+        desktopOthersTriggerRef.current?.focus();
+      }
+
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        setMobileOthersOpen(false);
+        window.requestAnimationFrame(() => mobileToggleRef.current?.focus());
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [desktopOthersOpen, mobileMenuOpen]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
+
+  const primaryLinks = [
     { label: 'Overview', href: '#overview' },
     { label: 'Services', href: '#services' },
     { label: 'Packages', href: '#packages' },
+    { label: 'Contact', href: '#contact' },
+  ];
+
+  const secondaryLinks = [
     { label: 'Clients', href: '#customers' },
     { label: 'How It Works', href: '#process' },
     { label: 'Controls', href: '#controls' },
     { label: 'Certificates', href: '#certificates' },
     { label: 'FAQs', href: '#faqs' },
-    { label: 'Contact', href: '#contact' },
   ];
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setMobileOthersOpen(false);
+  };
+
+  const handleDesktopOthersKeyDown = (event) => {
+    if (event.key !== 'ArrowDown') return;
+
+    event.preventDefault();
+    setDesktopOthersOpen(true);
+    window.requestAnimationFrame(() => firstDesktopOtherLinkRef.current?.focus());
+  };
 
   return (
     <>
@@ -71,7 +132,7 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
 
           {/* Desktop Navigation */}
           <nav className="desktop-nav" aria-label="Main Navigation">
-            {navLinks.map((link) => (
+            {primaryLinks.map((link) => (
               <a 
                 key={link.href} 
                 href={link.href}
@@ -80,16 +141,51 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
                 {link.label}
               </a>
             ))}
+
+            <div
+              ref={desktopOthersRef}
+              className={`desktop-others ${desktopOthersOpen ? 'is-open' : ''}`}
+              onMouseEnter={() => setDesktopOthersOpen(true)}
+              onMouseLeave={() => setDesktopOthersOpen(false)}
+            >
+              <button
+                ref={desktopOthersTriggerRef}
+                type="button"
+                className="nav-item nav-dropdown-trigger"
+                aria-haspopup="menu"
+                aria-expanded={desktopOthersOpen}
+                aria-controls="desktop-others-menu"
+                onClick={() => setDesktopOthersOpen((isOpen) => !isOpen)}
+                onKeyDown={handleDesktopOthersKeyDown}
+              >
+                <span>Others</span>
+                <ChevronDown size={15} className="nav-dropdown-icon" aria-hidden="true" />
+              </button>
+              <div id="desktop-others-menu" className="desktop-others-menu" role="menu">
+                {secondaryLinks.map((link, index) => (
+                  <a
+                    key={link.href}
+                    ref={index === 0 ? firstDesktopOtherLinkRef : null}
+                    href={link.href}
+                    className="desktop-others-link"
+                    role="menuitem"
+                    onClick={() => setDesktopOthersOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           </nav>
 
           {/* Header Action Buttons */}
           <div className="header-actions">
-            {/* Live Submissions Drawer Trigger (Client Preview) */}
             <button 
+              ref={mobileToggleRef}
               type="button"
               onClick={onOpenAdmin}
               className="btn-leads-preview"
-              title="View Received Enquiries (Client Preview)"
+              title="View desk enquiries"
             >
               <Inbox size={16} />
               <span className="leads-label">Desk Enquiries</span>
@@ -110,8 +206,13 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
             <button 
               type="button"
               className="mobile-toggle"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => {
+                setMobileMenuOpen((isOpen) => !isOpen);
+                setMobileOthersOpen(false);
+              }}
               aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
@@ -121,26 +222,53 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
 
         {/* Mobile Slide-down Menu */}
         {mobileMenuOpen && (
-          <div className="mobile-menu-drawer animate-fade-in">
+          <nav id="mobile-navigation" className="mobile-menu-drawer animate-fade-in" aria-label="Mobile navigation">
             <div className="mobile-links-list">
-              {navLinks.map((link) => (
+              {primaryLinks.map((link) => (
                 <a 
                   key={link.href} 
                   href={link.href}
                   className="mobile-nav-link"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                 >
                   <span>{link.label}</span>
                   <ChevronRight size={16} />
                 </a>
               ))}
+              <div className="mobile-others">
+                <button
+                  type="button"
+                  className="mobile-nav-link mobile-others-trigger"
+                  aria-expanded={mobileOthersOpen}
+                  aria-controls="mobile-others-menu"
+                  onClick={() => setMobileOthersOpen((isOpen) => !isOpen)}
+                >
+                  <span>Others</span>
+                  <ChevronDown size={16} className={`mobile-others-icon ${mobileOthersOpen ? 'is-open' : ''}`} aria-hidden="true" />
+                </button>
+                {mobileOthersOpen && (
+                  <div id="mobile-others-menu" className="mobile-others-menu">
+                    {secondaryLinks.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        className="mobile-other-link"
+                        onClick={closeMobileMenu}
+                      >
+                        <span>{link.label}</span>
+                        <ChevronRight size={15} />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mobile-menu-actions">
               <button 
                 type="button" 
                 className="btn btn-lime btn-block"
                 onClick={() => {
-                  setMobileMenuOpen(false);
+                  closeMobileMenu();
                   onOpenEnquiry();
                 }}
               >
@@ -150,15 +278,15 @@ export default function Navbar({ onOpenEnquiry, onOpenAdmin, enquiryCount = 0 })
                 type="button"
                 className="btn btn-outline-white btn-block"
                 onClick={() => {
-                  setMobileMenuOpen(false);
+                  closeMobileMenu();
                   onOpenAdmin();
                 }}
               >
                 <Inbox size={16} />
-                <span>View Enquiries Desk ({enquiryCount})</span>
+                <span>Desk Enquiries ({enquiryCount})</span>
               </button>
             </div>
-          </div>
+          </nav>
         )}
       </header>
     </>

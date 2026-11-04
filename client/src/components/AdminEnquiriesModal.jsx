@@ -4,14 +4,10 @@ import {
   Inbox, 
   RefreshCw, 
   Search, 
-  Calendar, 
-  Building, 
-  Tag, 
-  Clock, 
-  ExternalLink,
   CheckCircle2,
   Database
 } from 'lucide-react';
+import useDialog from '../useDialog';
 
 export default function AdminEnquiriesModal({ isOpen, onClose }) {
   const [enquiries, setEnquiries] = useState([]);
@@ -49,6 +45,13 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  const handleClose = () => {
+    setSelectedEnquiry(null);
+    onClose();
+  };
+
+  const dialogRef = useDialog(isOpen, handleClose);
+
   if (!isOpen) return null;
 
   const filtered = enquiries.filter(item => {
@@ -63,10 +66,15 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
   });
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={handleClose}>
       <div 
+        ref={dialogRef}
         className="modal-container admin-drawer-modal" 
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="enquiries-dialog-title"
+        tabIndex={-1}
       >
         {/* Modal Header */}
         <div className="modal-header">
@@ -75,7 +83,7 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
               <Inbox size={20} />
             </div>
             <div>
-              <h3 className="modal-title">Coordinated Service Desk — Incoming Enquiries</h3>
+              <h3 id="enquiries-dialog-title" className="modal-title">Coordinated Service Desk — Incoming Enquiries</h3>
               <div className="db-indicator-row">
                 <Database size={13} />
                 <span>Backend Storage: <strong>{dbStatus || 'Connected'}</strong></span>
@@ -96,9 +104,10 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
             </button>
             <button 
               type="button" 
-              onClick={onClose} 
+              onClick={handleClose}
               className="btn-close-modal"
               aria-label="Close dialog"
+              data-dialog-autofocus
             >
               <X size={20} />
             </button>
@@ -111,16 +120,15 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
           <div className="admin-controls-strip">
             <div className="search-wrap">
               <Search size={16} />
+              <label className="visually-hidden" htmlFor="enquiry-search">Search enquiries</label>
               <input 
                 type="text" 
+                id="enquiry-search"
                 placeholder="Search by reference ID, name, email or service..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="admin-search-input"
               />
-            </div>
-            <div className="client-instruction-note">
-              <em>Note for client:</em> This management drawer verifies your live MERN integration.
             </div>
           </div>
 
@@ -133,7 +141,7 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
             <div className="admin-empty-state">
               <Inbox size={36} className="empty-icon" />
               <h4>No enquiries found</h4>
-              <p>Submit a test consultation request through the website form to see it appear here instantly!</p>
+              <p>Submit a consultation request through the website form to see it appear here.</p>
             </div>
           ) : (
             <div className="admin-table-container">
@@ -196,7 +204,7 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
 
           {/* Detailed Item View Modal Sub-overlay */}
           {selectedEnquiry && (
-            <div className="enquiry-detail-overlay">
+            <div className="enquiry-detail-overlay" role="dialog" aria-modal="true" aria-label="Enquiry details">
               <div className="enquiry-detail-card animate-fade-in">
                 <div className="detail-card-head">
                   <div>
@@ -207,6 +215,7 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
                     type="button" 
                     onClick={() => setSelectedEnquiry(null)}
                     className="btn-close-sub"
+                    aria-label="Close enquiry details"
                   >
                     <X size={18} />
                   </button>
@@ -270,7 +279,7 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
             <CheckCircle2 size={16} />
             <span>FINOVARA Coordinated Service Desk • Secure MERN Storage</span>
           </div>
-          <button type="button" onClick={onClose} className="btn btn-forest btn-sm">
+          <button type="button" onClick={handleClose} className="btn btn-forest btn-sm">
             Close Drawer
           </button>
         </div>

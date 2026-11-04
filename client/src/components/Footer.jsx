@@ -1,18 +1,7 @@
 import React from 'react';
-import { 
-  Building2, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Clock, 
-  ShieldCheck, 
-  ArrowUp,
-  FileText,
-  Lock,
-  ExternalLink
-} from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 
-export default function Footer({ onOpenLegal, onOpenEnquiry, onOpenAdmin }) {
+export default function Footer({ onOpenLegal, onOpenAdmin }) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -63,17 +52,10 @@ export default function Footer({ onOpenLegal, onOpenEnquiry, onOpenAdmin }) {
               FINOVARA helps individuals and businesses stay organised, informed and ready for what comes next.
             </p>
 
-            <div className="footer-palette-tag">
-              <span className="dot dot-forest"></span>
-              <span className="dot dot-lime"></span>
-              <span className="dot dot-white"></span>
-              <span className="dot dot-deep"></span>
-              <span className="palette-label">Brand Palette Spec: #123D2B • #B8E04A • #F5F8F3 • #10271D</span>
-            </div>
           </div>
 
           {/* Column 2: Coordinated Service Desk */}
-          <div className="footer-col">
+          <div className="footer-col flex-col gap-3">
             <h4 className="footer-heading">Service Desk Pillars</h4>
             <ul className="footer-links-list">
               <li>
@@ -105,7 +87,7 @@ export default function Footer({ onOpenLegal, onOpenEnquiry, onOpenAdmin }) {
           </div>
 
           {/* Column 3: Fixed Packages Recap */}
-          <div className="footer-col">
+          <div className="footer-col flex-col gap-3">
             <h4 className="footer-heading">Advisory Packages</h4>
             <ul className="footer-packages-list">
               <li>
@@ -136,11 +118,11 @@ export default function Footer({ onOpenLegal, onOpenEnquiry, onOpenAdmin }) {
                 </a>
               </li>
             </ul>
-            <span className="indicative-note">*Indicative starting prices as per client specification.</span>
+            <span className="indicative-note">*Indicative starting prices.</span>
           </div>
 
           {/* Column 4: Operational Governance & Launch Verification */}
-          <div className="footer-col">
+          <div className="footer-col flex-col gap-3">
             <h4 className="footer-heading">Operating Governance</h4>
             <ul className="footer-links-list">
               <li><a href="#controls" className="footer-link">Scope Before Work Standard</a></li>
@@ -156,7 +138,7 @@ export default function Footer({ onOpenLegal, onOpenEnquiry, onOpenAdmin }) {
                 onClick={onOpenAdmin} 
                 className="btn-admin-drawer"
               >
-                <span>Desk Enquiry Viewer (Client Preview)</span>
+                <span className="pt-3">Desk Enquiries</span>
               </button>
             </div>
           </div>

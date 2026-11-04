@@ -3,9 +3,7 @@ import {
   Compass, 
   FileCheck, 
   GitMerge, 
-  CheckCircle2, 
-  ArrowRight,
-  ShieldAlert
+  CheckCircle2
 } from 'lucide-react';
 
 export default function HowItWorks({ onOpenEnquiry }) {
@@ -59,7 +57,7 @@ export default function HowItWorks({ onOpenEnquiry }) {
 
         {/* 4 Steps Horizontal Flow Grid */}
         <div className="grid-4 process-flow-grid">
-          {steps.map((step, idx) => {
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div key={step.num} className="process-card">

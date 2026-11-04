@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Overview from './components/Overview';
 import Services from './components/Services';
 import Packages from './components/Packages';
 import HowItWorks from './components/HowItWorks';
@@ -36,7 +35,7 @@ export default function App() {
         const data = await res.json();
         setEnquiryCount(data.count || (data.enquiries ? data.enquiries.length : 0));
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
@@ -104,6 +103,7 @@ export default function App() {
 
   return (
     <div className="finovara-app">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       {/* Navigation Header */}
       <Navbar 
         onOpenEnquiry={() => handleOpenConsultModal()} 
@@ -118,39 +118,35 @@ export default function App() {
           onSelectService={handleSelectService}
         />
 
-        {/* 2. Website Layout At A Glance (Overview) */}
-        <Overview />
-
-        {/* 3. 01 / Services Section */}
+        {/* 2. 01 / Services Section */}
         <Services onSelectService={handleSelectService} />
 
-        {/* 4. 02 / Packages & Pricing Section */}
+        {/* 3. 02 / Packages & Pricing Section */}
         <Packages onSelectPackage={handleSelectPackage} />
 
-        {/* 5. How It Works: Four Stages */}
+        {/* 4. How It Works: Four Stages */}
         <HowItWorks onOpenEnquiry={handleOpenConsultModal} />
 
-        {/* 6. Built-in Operating Controls */}
+        {/* 5. Built-in Operating Controls */}
         <OperatingControls />
 
-        {/* 7. 03 / Target Customers (Stages of Business) */}
+        {/* 6. 03 / Target Customers (Stages of Business) */}
         <TargetCustomers onSelectCustomerType={handleSelectCustomerType} />
 
-        {/* 8. Certificates & Documentation */}
+        {/* 7. Certificates & Documentation */}
         <Certificates onOpenEnquiry={handleOpenConsultModal} />
 
-        {/* 9. 04 / Contact & Enquiry Form */}
+        {/* 8. 04 / Contact & Enquiry Form */}
         <EnquirySection 
           initialValues={formInitialValues}
           onSuccessEnquiry={handleEnquirySuccess}
-          onOpenAdmin={() => setIsAdminModalOpen(true)}
         />
 
-        {/* 10. FAQs Section */}
+        {/* 9. FAQs Section */}
         <FAQSection onOpenEnquiry={handleOpenConsultModal} />
       </main>
 
-      {/* 11. Footer */}
+      {/* 10. Footer */}
       <Footer 
         onOpenLegal={handleOpenLegal}
         onOpenEnquiry={() => handleOpenConsultModal()}
