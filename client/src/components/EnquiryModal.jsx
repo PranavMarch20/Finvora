@@ -26,6 +26,8 @@ export default function EnquiryModal({
     if (initialValues) {
       setFormData(prev => ({
         ...prev,
+        fullName: prev.fullName || initialValues.fullName || '',
+        email: prev.email || initialValues.email || '',
         businessType: initialValues.businessType || prev.businessType,
         serviceRequired: initialValues.serviceRequired || prev.serviceRequired,
         selectedPackage: initialValues.selectedPackage || prev.selectedPackage

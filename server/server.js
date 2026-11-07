@@ -1,21 +1,50 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import { toNodeHandler } from 'better-auth/node';
+import { auth, authDbDriver, isGoogleConfigured } from './auth.js';
+import Enquiry from './models/Enquiry.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/finovara';
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// CORS configuration supporting credentials for Better Auth cookies & sessions
+const allowedOrigins = [
+  'http://localhost:3055',
+  'http://127.0.0.1:3055',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000'
+];
 
-// Persistent fallback storage path
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true
+}));
+
+// 1. Mount Better Auth handler BEFORE body parsers!
+// Better Auth reads raw request stream; body-parsing before this causes requests to hang.
+app.all('/api/auth/*', toNodeHandler(auth));
+
+// 2. Standard body parsers for enquiry APIs & general requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Persistent fallback storage path for client enquiries
 const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -25,23 +54,20 @@ if (!fs.existsSync(enquiriesFilePath)) {
   fs.writeFileSync(enquiriesFilePath, JSON.stringify([], null, 2));
 }
 
-// Track DB status
+// Track Mongoose DB status
 let isMongoConnected = false;
 
-// Attempt MongoDB Connection
+// Attempt Mongoose Connection for Enquiry model
 mongoose.connect(MONGODB_URI, {
   serverSelectionTimeoutMS: 2500
 }).then(() => {
   isMongoConnected = true;
-  console.log('✅ Connected to MongoDB successfully:', MONGODB_URI);
+  console.log('✅ Connected to MongoDB successfully for Enquiries:', MONGODB_URI);
 }).catch((err) => {
   isMongoConnected = false;
-  console.warn('⚠️  MongoDB connection unavailable (' + err.message + ').');
+  console.warn(`⚠️  MongoDB connection unavailable for Enquiries (${err.message}).`);
   console.log('🔄 Automatic fallback active: Saving enquiries persistently to server/data/enquiries.json');
 });
-
-// Import Enquiry Model
-const Enquiry = require('./models/Enquiry');
 
 // Helper to generate reference ID
 function generateReferenceId() {
@@ -67,6 +93,17 @@ function saveFallbackEnquiry(enquiry) {
   return enquiry;
 }
 
+// Auth config / provider status endpoint
+app.get('/api/auth-status', (req, res) => {
+  res.json({
+    engine: 'better-auth',
+    emailPassword: true,
+    emailVerificationRequired: false,
+    googleAuth: isGoogleConfigured,
+    authDatabase: authDbDriver
+  });
+});
+
 // API Health Check
 app.get('/api/health', async (req, res) => {
   let count = 0;
@@ -85,6 +122,8 @@ app.get('/api/health', async (req, res) => {
     firm: 'FINOVARA – Finance & Business Advisory',
     tagline: 'Clarity in your numbers. Confidence in your business.',
     database: isMongoConnected ? 'MongoDB (Connected)' : 'Fallback Persistent Store (Active)',
+    authDatabase: authDbDriver,
+    googleAuthEnabled: isGoogleConfigured,
     enquiriesRecorded: count,
     timestamp: new Date().toISOString()
   });
@@ -237,6 +276,17 @@ app.post('/api/enquiries', async (req, res) => {
 
     const referenceId = generateReferenceId();
 
+    // Check if submitting user is authenticated via Better Auth
+    let authenticatedUser = null;
+    try {
+      const session = await auth.api.getSession({ headers: req.headers });
+      if (session?.user) {
+        authenticatedUser = session.user;
+      }
+    } catch {
+      // Unauthenticated visitor enquiry
+    }
+
     const enquiryData = {
       referenceId,
       fullName: fullName.trim(),
@@ -246,6 +296,8 @@ app.post('/api/enquiries', async (req, res) => {
       serviceRequired: serviceRequired.trim(),
       requirementDetails: requirementDetails.trim(),
       selectedPackage: selectedPackage || 'General Advisory',
+      userId: authenticatedUser?.id || null,
+      isClientAccount: Boolean(authenticatedUser),
       status: 'New',
       createdAt: new Date().toISOString()
     };
@@ -325,5 +377,5 @@ if (fs.existsSync(clientDistPath)) {
 app.listen(PORT, () => {
   console.log(`🚀 FINOVARA Advisory API Server running on port ${PORT}`);
   console.log(`🌐 Base URL: http://localhost:${PORT}`);
+  console.log(`🔒 Better Auth endpoints active under http://localhost:${PORT}/api/auth`);
 });
-

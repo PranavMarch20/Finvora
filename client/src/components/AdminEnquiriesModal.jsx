@@ -164,7 +164,14 @@ export default function AdminEnquiriesModal({ isOpen, onClose }) {
                         <span className="ref-id-badge">{item.referenceId}</span>
                       </td>
                       <td>
-                        <div className="client-name-bold">{item.fullName}</div>
+                        <div className="client-name-bold">
+                          {item.fullName}
+                          {item.isClientAccount && (
+                            <span className="account-verified-tag" title="Submitted by authenticated client">
+                              Client
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <div className="contact-col">

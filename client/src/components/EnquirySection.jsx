@@ -34,11 +34,13 @@ export default function EnquirySection({
   const [errorMsg, setErrorMsg] = useState('');
   const [successData, setSuccessData] = useState(null);
 
-  // Sync external pre-selected values
+  // Sync external pre-selected values and logged-in user profile
   useEffect(() => {
     if (initialValues) {
       setFormData(prev => ({
         ...prev,
+        fullName: prev.fullName || initialValues.fullName || '',
+        email: prev.email || initialValues.email || '',
         businessType: initialValues.businessType || prev.businessType,
         serviceRequired: initialValues.serviceRequired || prev.serviceRequired,
         selectedPackage: initialValues.selectedPackage || prev.selectedPackage
