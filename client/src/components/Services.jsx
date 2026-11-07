@@ -5,8 +5,6 @@ import {
   Building, 
   TrendingUp, 
   ArrowRight, 
-  CheckCircle2, 
-  ExternalLink,
   Search
 } from 'lucide-react';
 
@@ -142,6 +140,13 @@ export default function Services({ onSelectService }) {
     }))
     .filter(cat => cat.services.length > 0);
 
+  const handleServiceKeyDown = (event, category, serviceName) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelectService(category, serviceName);
+    }
+  };
+
   return (
     <section id="services" className="section services-section">
       <div className="container">
@@ -160,8 +165,10 @@ export default function Services({ onSelectService }) {
           {/* Quick Search */}
           <div className="service-search-box">
             <Search size={18} className="search-icon" />
+            <label className="visually-hidden" htmlFor="service-search">Search services</label>
             <input 
               type="text" 
+              id="service-search"
               placeholder="Search a service (e.g. GST, MIS, Payroll)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -180,11 +187,12 @@ export default function Services({ onSelectService }) {
         </div>
 
         {/* Filter Tabs */}
-        <div className="category-filter-bar">
+        <div className="category-filter-bar" aria-label="Filter services by category">
           <button 
             type="button" 
             className={`filter-chip ${activeFilter === 'all' ? 'active' : ''}`}
             onClick={() => setActiveFilter('all')}
+            aria-pressed={activeFilter === 'all'}
           >
             All Categories ({serviceCategories.reduce((acc, c) => acc + c.services.length, 0)})
           </button>
@@ -194,6 +202,7 @@ export default function Services({ onSelectService }) {
               type="button" 
               className={`filter-chip ${activeFilter === cat.id ? 'active' : ''}`}
               onClick={() => setActiveFilter(cat.id)}
+              aria-pressed={activeFilter === cat.id}
             >
               {cat.title} ({cat.services.length})
             </button>
@@ -228,8 +237,10 @@ export default function Services({ onSelectService }) {
                       key={idx} 
                       className="service-interactive-card"
                       onClick={() => onSelectService(cat.id, item.name)}
+                      onKeyDown={(event) => handleServiceKeyDown(event, cat.id, item.name)}
                       role="button"
                       tabIndex={0}
+                      aria-label={`Enquire for ${item.name}`}
                     >
                       <div className="service-card-top">
                         <span className="service-bullet-mark">■</span>

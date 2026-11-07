@@ -2,11 +2,7 @@ import React from 'react';
 import { 
   FileSpreadsheet, 
   Users2, 
-  AlertCircle, 
   ShieldCheck, 
-  FileCheck, 
-  BadgeCheck, 
-  Briefcase,
   ArrowRight
 } from 'lucide-react';
 

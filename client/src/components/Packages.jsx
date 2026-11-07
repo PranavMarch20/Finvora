@@ -2,19 +2,12 @@ import React, { useState } from 'react';
 import { 
   Check, 
   Sparkles, 
-  ArrowRight, 
-  Info, 
-  ShieldAlert, 
-  SlidersHorizontal,
   ChevronDown,
   Calculator
 } from 'lucide-react';
 
 export default function Packages({ onSelectPackage }) {
   const [showEstimator, setShowEstimator] = useState(false);
-  const [entityType, setEntityType] = useState('Proprietorship / LLP');
-  const [txnVolume, setTxnVolume] = useState('Up to 100 txns/mo');
-  const [payrollSize, setPayrollSize] = useState('1 to 5 members');
 
   const packages = [
     {

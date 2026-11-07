@@ -1,13 +1,7 @@
 import React from 'react';
 import { 
   ArrowRight, 
-  CheckCircle2, 
-  ShieldCheck, 
-  BarChart3, 
-  FileCheck2,
-  Calendar,
-  Layers,
-  Sparkles
+  ShieldCheck
 } from 'lucide-react';
 
 export default function Hero({ onOpenEnquiry, onSelectService }) {
@@ -18,8 +12,15 @@ export default function Hero({ onOpenEnquiry, onSelectService }) {
     { number: '04', title: 'MIS & Budgeting', category: 'profitability-planning' },
   ];
 
+  const handleDeskItemKeyDown = (event, item) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelectService(item.category, item.title);
+    }
+  };
+
   return (
-    <section className="hero-section">
+    <section id="overview" className="hero-section">
       <div className="container hero-container">
         
         {/* Left Column: Hero Editorial Content */}
@@ -103,9 +104,10 @@ export default function Hero({ onOpenEnquiry, onSelectService }) {
                   key={item.number} 
                   className="desk-item"
                   onClick={() => onSelectService(item.category, item.title)}
+                  onKeyDown={(event) => handleDeskItemKeyDown(event, item)}
                   role="button"
                   tabIndex={0}
-                  title={`Enquire for ${item.title}`}
+                  aria-label={`Enquire for ${item.title}`}
                 >
                   <span className="desk-num">{item.number}</span>
                   <span className="desk-name">{item.title}</span>

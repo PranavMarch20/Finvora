@@ -185,12 +185,14 @@ FINVORA/
 │   ├── vite.config.js
 │   └── package.json
 │
-├── server/                     # Backend (Node.js, Express, MongoDB Mongoose)
+├── server/                     # Backend (Node.js, Express, MongoDB Mongoose & Better Auth)
 │   ├── models/
 │   │   └── Enquiry.js          # Mongoose schema with strict validation
 │   ├── data/
-│   │   └── enquiries.json      # Persistent local fallback store
-│   ├── server.js               # REST API & static dist host
+│   │   ├── enquiries.json      # Persistent local fallback store for enquiries
+│   │   └── auth.sqlite         # Persistent local fallback store for Better Auth
+│   ├── auth.js                 # Better Auth server configuration (Dual MongoDB/SQLite)
+│   ├── server.js               # REST API, Better Auth handler & static dist host
 │   └── package.json
 │
 └── package.json                # Root orchestrator with concurrently
@@ -219,6 +221,22 @@ npm run build
 npm start
 ```
 Open [http://localhost:5000](http://localhost:5000).
+
+---
+
+## 🔐 Better Auth (Email/Password & Google Authentication)
+
+FINOVARA integrates **Better Auth** with both Email/Password (instant activation without email verification) and Google OAuth:
+
+- **Email & Password**: Enabled out-of-the-box with `requireEmailVerification: false`. Users can register and sign in immediately.
+- **Google OAuth**: Integrated via `socialProviders.google`. To enable live Google Sign-In, add your credentials in `.env`:
+  ```env
+  GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+  GOOGLE_CLIENT_SECRET=your-google-client-secret
+  ```
+  *Authorized Redirect URI for Google Cloud Console:* `http://localhost:5000/api/auth/callback/google`
+- **Dual-Database Adapter**: Better Auth seamlessly connects to MongoDB if available, or automatically falls back to an embedded SQLite database (`server/data/auth.sqlite`) using Node.js's native `node:sqlite` driver so the authentication system works 100% offline and in all development environments.
+- **Navbar Integration**: Includes a sleek **Log In / Sign Up** button that transitions into an active account profile dropdown (with avatar, user email, quick links, and **Sign Out** button) once authenticated.
 
 ---
 

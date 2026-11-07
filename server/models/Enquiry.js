@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const EnquirySchema = new mongoose.Schema({
   referenceId: {
@@ -55,6 +55,14 @@ const EnquirySchema = new mongoose.Schema({
     trim: true,
     default: 'Custom Advisory'
   },
+  userId: {
+    type: String,
+    default: null
+  },
+  isClientAccount: {
+    type: Boolean,
+    default: false
+  },
   status: {
     type: String,
     enum: ['New', 'Contacted', 'Proposal Sent', 'Onboarded', 'Closed'],
@@ -66,4 +74,4 @@ const EnquirySchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Enquiry', EnquirySchema);
+export default mongoose.model('Enquiry', EnquirySchema);

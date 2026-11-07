@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { 
   Plus, 
   Minus, 
-  HelpCircle, 
   MessageSquare, 
-  ArrowRight,
-  ShieldAlert
+  ArrowRight
 } from 'lucide-react';
 
 export default function FAQSection({ onOpenEnquiry }) {
@@ -65,6 +63,7 @@ export default function FAQSection({ onOpenEnquiry }) {
                   className="faq-question-btn"
                   onClick={() => setOpenIndex(isOpen ? -1 : idx)}
                   aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${idx}`}
                 >
                   <span className="faq-q-text">{faq.question}</span>
                   <span className="faq-toggle-icon">
@@ -73,7 +72,7 @@ export default function FAQSection({ onOpenEnquiry }) {
                 </button>
 
                 {isOpen && (
-                  <div className="faq-answer-panel animate-fade-in">
+                  <div id={`faq-answer-${idx}`} className="faq-answer-panel animate-fade-in">
                     <p className="faq-answer-text">{faq.answer}</p>
                   </div>
                 )}

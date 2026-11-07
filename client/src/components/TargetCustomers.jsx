@@ -64,6 +64,13 @@ export default function TargetCustomers({ onSelectCustomerType }) {
     }
   ];
 
+  const handleSegmentKeyDown = (event, customerType) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelectCustomerType(customerType);
+    }
+  };
+
   return (
     <section id="customers" className="section target-customers-section">
       <div className="container">
@@ -86,8 +93,10 @@ export default function TargetCustomers({ onSelectCustomerType }) {
                 key={segment.id} 
                 className="customer-segment-card"
                 onClick={() => onSelectCustomerType(segment.id)}
+                onKeyDown={(event) => handleSegmentKeyDown(event, segment.id)}
                 role="button"
                 tabIndex={0}
+                aria-label={`Enquire as ${segment.title}`}
               >
                 <div className="segment-card-header">
                   <div className="segment-icon-box">

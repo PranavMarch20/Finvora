@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Overview from './components/Overview';
 import Services from './components/Services';
 import Packages from './components/Packages';
 import HowItWorks from './components/HowItWorks';
@@ -14,19 +13,36 @@ import Footer from './components/Footer';
 import EnquiryModal from './components/EnquiryModal';
 import AdminEnquiriesModal from './components/AdminEnquiriesModal';
 import LegalModal from './components/LegalModal';
+import AuthModal from './components/AuthModal';
+import { authClient } from './lib/auth-client';
 
 export default function App() {
+  const { data: session } = authClient.useSession();
   const [enquiryCount, setEnquiryCount] = useState(0);
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [authModalState, setAuthModalState] = useState({ isOpen: false, mode: 'signin' });
   const [legalModalState, setLegalModalState] = useState({ isOpen: false, mode: 'privacy' });
 
   // State to hold pre-filled values for the main on-page form
   const [formInitialValues, setFormInitialValues] = useState({
+    fullName: '',
+    email: '',
     businessType: '',
     serviceRequired: '',
     selectedPackage: ''
   });
+
+  // Keep form initialized with logged-in user profile if available
+  useEffect(() => {
+    if (session?.user) {
+      setFormInitialValues(prev => ({
+        ...prev,
+        fullName: prev.fullName || session.user.name || '',
+        email: prev.email || session.user.email || ''
+      }));
+    }
+  }, [session]);
 
   // Fetch count on load
   const loadCount = async () => {
@@ -36,7 +52,7 @@ export default function App() {
         const data = await res.json();
         setEnquiryCount(data.count || (data.enquiries ? data.enquiries.length : 0));
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
@@ -94,6 +110,18 @@ export default function App() {
     setIsConsultModalOpen(true);
   };
 
+  const handleOpenAuth = (mode = 'signin') => {
+    setAuthModalState({ isOpen: true, mode });
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+  };
+
   const handleOpenLegal = (mode = 'privacy') => {
     setLegalModalState({ isOpen: true, mode });
   };
@@ -104,11 +132,15 @@ export default function App() {
 
   return (
     <div className="finovara-app">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       {/* Navigation Header */}
       <Navbar 
         onOpenEnquiry={() => handleOpenConsultModal()} 
         onOpenAdmin={() => setIsAdminModalOpen(true)}
         enquiryCount={enquiryCount}
+        onOpenAuth={handleOpenAuth}
+        session={session}
+        onSignOut={handleSignOut}
       />
 
       <main id="main-content">
@@ -118,39 +150,35 @@ export default function App() {
           onSelectService={handleSelectService}
         />
 
-        {/* 2. Website Layout At A Glance (Overview) */}
-        <Overview />
-
-        {/* 3. 01 / Services Section */}
+        {/* 2. 01 / Services Section */}
         <Services onSelectService={handleSelectService} />
 
-        {/* 4. 02 / Packages & Pricing Section */}
+        {/* 3. 02 / Packages & Pricing Section */}
         <Packages onSelectPackage={handleSelectPackage} />
 
-        {/* 5. How It Works: Four Stages */}
+        {/* 4. How It Works: Four Stages */}
         <HowItWorks onOpenEnquiry={handleOpenConsultModal} />
 
-        {/* 6. Built-in Operating Controls */}
+        {/* 5. Built-in Operating Controls */}
         <OperatingControls />
 
-        {/* 7. 03 / Target Customers (Stages of Business) */}
+        {/* 6. 03 / Target Customers (Stages of Business) */}
         <TargetCustomers onSelectCustomerType={handleSelectCustomerType} />
 
-        {/* 8. Certificates & Documentation */}
+        {/* 7. Certificates & Documentation */}
         <Certificates onOpenEnquiry={handleOpenConsultModal} />
 
-        {/* 9. 04 / Contact & Enquiry Form */}
+        {/* 8. 04 / Contact & Enquiry Form */}
         <EnquirySection 
           initialValues={formInitialValues}
           onSuccessEnquiry={handleEnquirySuccess}
-          onOpenAdmin={() => setIsAdminModalOpen(true)}
         />
 
-        {/* 10. FAQs Section */}
+        {/* 9. FAQs Section */}
         <FAQSection onOpenEnquiry={handleOpenConsultModal} />
       </main>
 
-      {/* 11. Footer */}
+      {/* 10. Footer */}
       <Footer 
         onOpenLegal={handleOpenLegal}
         onOpenEnquiry={() => handleOpenConsultModal()}
@@ -174,6 +202,13 @@ export default function App() {
         isOpen={legalModalState.isOpen}
         mode={legalModalState.mode}
         onClose={() => setLegalModalState(prev => ({ ...prev, isOpen: false }))}
+      />
+
+      {/* Better Auth Login / Signup Modal */}
+      <AuthModal
+        isOpen={authModalState.isOpen}
+        initialMode={authModalState.mode}
+        onClose={() => setAuthModalState(prev => ({ ...prev, isOpen: false }))}
       />
     </div>
   );
