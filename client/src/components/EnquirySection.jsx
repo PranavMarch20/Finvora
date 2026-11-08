@@ -180,7 +180,6 @@ export default function EnquirySection({
         
         {/* Section Header */}
         <div className="enquiry-top-header">
-          <span className="section-tag">04 / CONTACT &amp; ENQUIRY</span>
           <h2 className="section-heading">Let's make business simpler.</h2>
           <p className="section-lead">
             Connect directly with our Coordinated Service Desk. Tell us about your business structure, 
