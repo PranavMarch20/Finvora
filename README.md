@@ -5,6 +5,95 @@
 
 ---
 
+## 🚀 Quick Start for Teammates
+
+> Clone the repo and get the full app running locally in under 5 minutes.
+
+### Prerequisites
+Make sure you have these installed on your machine:
+- **Node.js** v18+ → https://nodejs.org
+- **npm** v9+ (comes with Node.js)
+- **MongoDB Community Server** *(optional but recommended)* → https://www.mongodb.com/try/download/community
+  - If you skip MongoDB, the app automatically falls back to saving enquiries in a local JSON file.
+- **Git** → https://git-scm.com
+
+---
+
+### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/Rajan257/Finvora.git
+cd Finvora
+```
+
+---
+
+### Step 2 — Install dependencies
+
+Install root dependencies (the `concurrently` runner), server dependencies, and client dependencies all at once:
+
+```bash
+# Root
+npm install
+
+# Backend
+cd server
+npm install
+cd ..
+
+# Frontend
+cd client
+npm install
+cd ..
+```
+
+---
+
+### Step 3 — Set up environment variables
+
+```bash
+# Windows
+copy .env.example .env
+
+# Mac / Linux
+cp .env.example .env
+```
+
+Open `.env` and check the values. The defaults work out-of-the-box if you have MongoDB running locally. If you don't have MongoDB installed, **no changes are needed** — the app automatically uses `server/data/enquiries.json` as a fallback store.
+
+---
+
+### Step 4 — Run in development mode
+
+From the **project root** (not inside `client` or `server`):
+
+```bash
+npm run dev
+```
+
+This starts both servers simultaneously:
+
+| Service | URL |
+|---|---|
+| **Frontend (React + Vite HMR)** | http://localhost:3055 |
+| **Backend API (Express)** | http://localhost:5000 |
+| **API Health Check** | http://localhost:5000/api/health |
+
+Open **http://localhost:3055** in your browser. Any changes to React source files hot-reload instantly.
+
+---
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `port already in use` | Kill the process on that port: `npx kill-port 3055` or `npx kill-port 5000` |
+| MongoDB not connecting | That's fine — the app falls back to `server/data/enquiries.json` automatically |
+| `concurrently: command not found` | Run `npm install` from the project root again |
+| React page shows blank | Check the terminal for Vite errors; run `npm install` inside the `client/` folder |
+
+---
+
 ## 🏛️ Executive Summary
 
 This repository contains the complete, production-ready official website and service desk platform for **FINOVARA – Finance & Business Advisory**, developed strictly in accordance with the authoritative 5-page client specification layout and requirements document.
@@ -200,27 +289,24 @@ FINVORA/
 
 ---
 
-## 🚀 How to Run the Application
+## 🛠️ Available npm Scripts
 
-### Option A: Simultaneous Dev Mode (Recommended)
-Run both the Express API and Vite React client together with one command from the project root:
+Run these from the **project root**:
 
-```bash
-npm run dev
-```
+| Script | Command | Description |
+|---|---|---|
+| Dev mode (recommended) | `npm run dev` | Starts API + Client together with hot reload |
+| Build frontend | `npm run build` | Compiles React app into `client/dist/` |
+| Production server | `npm start` | Serves built app via Express on port 5000 |
+| Backend only | `npm run server` | Starts Express API alone |
+| Frontend only | `npm run client` | Starts Vite dev server alone |
 
-- **Frontend Client:** [http://localhost:3055](http://localhost:3055)
-- **Backend API:** [http://localhost:5000](http://localhost:5000)
-- **Health Endpoint:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
-
-### Option B: Production Server
-Build the frontend and run the production Express server which statically serves the built web app:
+### Production Mode
 
 ```bash
-npm run build
-npm start
+npm run build   # Build the React frontend
+npm start       # Serve everything via Express on http://localhost:5000
 ```
-Open [http://localhost:5000](http://localhost:5000).
 
 ---
 
