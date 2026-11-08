@@ -154,7 +154,6 @@ export default function Services({ onSelectService }) {
         {/* Section Header */}
         <div className="services-header-row">
           <div>
-            <span className="section-tag">01 / SERVICES</span>
             <h2 className="section-heading">Complete support across your business journey.</h2>
             <p className="section-lead">
               Services are grouped by customer need so visitors can quickly find the right support. 

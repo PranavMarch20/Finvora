@@ -77,7 +77,6 @@ export default function TargetCustomers({ onSelectCustomerType }) {
         
         {/* Section Header */}
         <div className="section-head-block text-center">
-          <span className="section-tag">03 / TRUST & ENQUIRIES</span>
           <h2 className="section-heading">Built for every stage of business.</h2>
           <p className="section-lead mx-auto">
             From independent professionals filing returns to medium-sized manufacturers managing complex working capital cycles, FINOVARA tailors its service structure to match your operational reality.

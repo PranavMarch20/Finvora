@@ -42,7 +42,6 @@ export default function FAQSection({ onOpenEnquiry }) {
         
         {/* Section Header */}
         <div className="section-head-block text-center">
-          <span className="section-tag">FREQUENTLY ASKED QUESTIONS</span>
           <h2 className="section-heading">Everything you need to know about working with FINOVARA.</h2>
           <p className="section-lead mx-auto">
             Clear answers regarding our service delivery, pricing scope, maker-checker governance, and professional partner coordination.

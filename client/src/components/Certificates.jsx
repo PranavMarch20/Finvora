@@ -33,7 +33,6 @@ export default function Certificates({ onOpenEnquiry }) {
         
         {/* Section Header */}
         <div className="section-head-block">
-          <span className="section-tag">CERTIFICATES & DOCUMENTATION</span>
           <h2 className="section-heading">Prepare the numbers. Coordinate the right professional.</h2>
           <p className="section-lead">
             When banks, tenders, authorities, or auditors request substantiated financial packs, FINOVARA compiles the underlying working papers and seamlessly coordinates with authorized independent professionals for statutory attestations.

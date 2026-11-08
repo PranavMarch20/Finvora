@@ -76,7 +76,6 @@ export default function OperatingControls() {
         <div className="section-head-block">
           <div className="controls-header-badge">
             <ShieldCheck size={18} className="shield-icon" />
-            <span className="section-tag">BUILT-IN OPERATING CONTROLS</span>
           </div>
           <h2 className="section-heading">Operational governance built for precision.</h2>
           <p className="section-lead">

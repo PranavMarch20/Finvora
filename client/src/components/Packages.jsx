@@ -69,7 +69,6 @@ export default function Packages({ onSelectPackage }) {
         
         {/* Section Header */}
         <div className="section-head-block text-center">
-          <span className="section-tag">02 / PACKAGES & DELIVERY</span>
           <h2 className="section-heading">Plans that fit your needs.</h2>
           <p className="section-lead mx-auto">
             Indicative starting prices; final fees depend on transaction volume, entity type, 

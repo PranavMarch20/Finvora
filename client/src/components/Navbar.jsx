@@ -9,6 +9,7 @@ import {
   LogOut,
   Sparkles
 } from 'lucide-react';
+import defaultAvatar from '../assets/default-avatar.png';
 
 export default function Navbar({ 
   onOpenEnquiry, 
@@ -255,9 +256,7 @@ export default function Navbar({
                   {session.user.image ? (
                     <img src={session.user.image} alt={session.user.name} className="user-nav-avatar-img" />
                   ) : (
-                    <span className="user-nav-avatar-initials">
-                      {getUserInitials(session.user.name || session.user.email)}
-                    </span>
+                    <img src={defaultAvatar} alt="Default Avatar" className="user-nav-avatar-img" />
                   )}
                   <span className="user-nav-name">
                     {session.user.name ? session.user.name.split(' ')[0] : 'Client'}
@@ -400,13 +399,7 @@ export default function Navbar({
               {session?.user ? (
                 <div className="mobile-user-card">
                   <div className="mobile-user-info">
-                    {session.user.image ? (
-                      <img src={session.user.image} alt={session.user.name} className="user-nav-avatar-img" />
-                    ) : (
-                      <span className="user-nav-avatar-initials">
-                        {getUserInitials(session.user.name || session.user.email)}
-                      </span>
-                    )}
+                    <img src={session.user.image || defaultAvatar} alt={session.user.name || 'User'} className="user-nav-avatar-img" />
                     <div className="mobile-user-details">
                       <div className="mobile-user-name">{session.user.name || 'Advisory Client'}</div>
                       <div className="mobile-user-email">{session.user.email}</div>

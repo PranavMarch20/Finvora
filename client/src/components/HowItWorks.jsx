@@ -48,7 +48,6 @@ export default function HowItWorks({ onOpenEnquiry }) {
         
         {/* Section Header */}
         <div className="section-head-block text-center">
-          <span className="section-tag">HOW IT WORKS</span>
           <h2 className="section-heading">A disciplined four-stage working method.</h2>
           <p className="section-lead mx-auto">
             From initial intake to monthly delivery, our engagement is transparent, milestone-governed, and structured to remove uncertainty from your business finances.
